@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JCBGo – Book JCB & Excavation Services Instantly</title>
+  <meta name="description" content="JCBGo connects you with nearby JCB operators in minutes. Fast, transparent, and reliable excavation services for homebuilders and contractors." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚜</text></svg>" />
+  <style>
+    /* ── Reset & Variables ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #F7C100;
+      --yellow-dark: #D9A800;
+      --orange: #FF6B00;
+      --dark: #1A1A2E;
+      --dark2: #16213E;
+      --dark3: #0F3460;
+      --text: #EAEAEA;
+      --text-muted: #9999AA;
+      --card: #1E2A45;
+      --card2: #243352;
+      --success: #22C55E;
+      --danger: #EF4444;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,0,0,.35);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Utility ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 28px; border-radius: 50px; border: none; cursor: pointer;
+      font-size: 1rem; font-weight: 700; transition: all .2s;
+    }
+    .btn-primary { background: var(--yellow); color: var(--dark); }
+    .btn-primary:hover { background: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(247,193,0,.4); }
+    .btn-outline { background: transparent; color: var(--yellow); border: 2px solid var(--yellow); }
+    .btn-outline:hover { background: var(--yellow); color: var(--dark); }
+    .btn-sm { padding: 8px 18px; font-size: .875rem; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: .75rem; font-weight: 600; }
+    .badge-green { background: rgba(34,197,94,.2); color: var(--success); }
+    .badge-orange { background: rgba(255,107,0,.2); color: var(--orange); }
+    .badge-yellow { background: rgba(247,193,0,.2); color: var(--yellow); }
+    .stars { color: var(--yellow); letter-spacing: 2px; }
+    .tag { display: inline-block; background: var(--card2); color: var(--text-muted); padding: 4px 12px; border-radius: 50px; font-size: .78rem; margin: 2px; }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(26,26,46,.92); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; border-bottom: 1px solid rgba(247,193,0,.15);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; color: var(--yellow); text-decoration: none; }
+    .nav-brand span { font-size: 1.8rem; }
+    .nav-links { display: flex; gap: 10px; }
+    @media (max-width: 480px) { .nav-links .btn-outline { display: none; } }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 92vh;
+      background: linear-gradient(135deg, var(--dark2) 0%, var(--dark3) 60%, #1a0a2e 100%);
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; padding: 60px 20px;
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(247,193,0,.08) 0%, transparent 70%);
+    }
+    .hero-content { position: relative; max-width: 720px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(247,193,0,.12); border: 1px solid rgba(247,193,0,.3);
+      color: var(--yellow); padding: 6px 16px; border-radius: 50px;
+      font-size: .85rem; font-weight: 600; margin-bottom: 28px;
+    }
+    h1 { font-size: clamp(2rem, 6vw, 3.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+    h1 em { font-style: normal; color: var(--yellow); }
+    .hero-sub { font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-muted); margin-bottom: 40px; line-height: 1.6; }
+    .hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .hero-stats { display: flex; gap: 32px; justify-content: center; margin-top: 56px; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 900; color: var(--yellow); }
+    .stat-label { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+    .floating-jcb {
+      position: absolute; font-size: 8rem; opacity: .06;
+      animation: float 6s ease-in-out infinite;
+    }
+    .floating-jcb:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+    .floating-jcb:nth-child(2) { top: 60%; right: 5%; animation-delay: 2s; font-size: 5rem; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+
+    /* ── Section Shared ── */
+    section { padding: 80px 20px; }
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .section-tag { display: inline-block; background: rgba(247,193,0,.12); color: var(--yellow); padding: 5px 16px; border-radius: 50px; font-size: .8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+    h2 { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; }
+    h2 em { font-style: normal; color: var(--yellow); }
+    .section-sub { color: var(--text-muted); margin-top: 10px; font-size: 1.05rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── How It Works ── */
+    #how { background: var(--dark2); }
+    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+    .step-card {
+      background: var(--card); border-radius: var(--radius); padding: 32px 24px;
+      text-align: center; position: relative; transition: transform .2s;
+      border: 1px solid rgba(255,255,255,.05);
+    }
+    .step-card:hover { transform: translateY(-4px); }
+    .step-icon { font-size: 2.6rem; margin-bottom: 16px; }
+    .step-num {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--yellow); color: var(--dark);
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: .85rem;
+    }
+    .step-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .step-card p { color: var(--text-muted); font-size: .9rem; line-height: 1.5; }
+
+    /* ── Booking Form ── */
+    #book { background: var(--dark3); }
+    .booking-wrapper {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+      align-items: start;
+    }
+    @media (max-width: 768px) { .booking-wrapper { grid-template-columns: 1fr; } }
+    .booking-form {
+      background: var(--card); border-radius: var(--radius); padding: 36px;
+      border: 1px solid rgba(247,193,0,.15); box-shadow: var(--shadow);
+    }
+    .form-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: .85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    input, select, textarea {
+      width: 100%; background: var(--dark2); border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: var(--radius-sm); padding: 12px 14px; color: var(--text);
+      font-size: .95rem; transition: border-color .2s; font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--yellow); }
+    select option { background: var(--dark2); }
+    textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .booking-info h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 16px; }
+    .info-list { list-style: none; }
+    .info-list li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: .92rem; color: var(--text-muted); }
+    .info-list li span.icon { font-size: 1.3rem; flex-shrink: 0; }
+    .price-estimate {
+      background: rgba(247,193,0,.08); border: 1px solid rgba(247,193,0,.25);
+      border-radius: var(--radius); padding: 20px; margin-top: 24px;
+    }
+    .price-estimate h4 { font-size: .9rem; color: var(--text-muted); margin-bottom: 8px; }
+    .price-range { font-size: 1.8rem; font-weight: 900; color: var(--yellow); }
+    .price-note { font-size: .78rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Operators / Map ── */
+    #operators { background: var(--dark2); }
+    .operators-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .operator-card {
+      background: var(--card); border-radius: var(--radius); padding: 22px;
+      border: 1px solid rgba(255,255,255,.05); transition: all .2s; cursor: pointer;
+    }
+    .operator-card:hover { border-color: var(--yellow); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(247,193,0,.12); }
+    .op-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .op-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+    .op-name { font-weight: 700; font-size: 1rem; }
+    .op-meta { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+    .op-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .op-stat { text-align: center; background: var(--dark2); border-radius: var(--radius-sm); padding: 8px; }
+    .op-stat-val { font-size: 1rem; font-weight: 800; color: var(--yellow); }
+    .op-stat-label { font-size: .7rem; color: var(--text-muted); margin-top: 2px; }
+    .op-tags { margin-bottom: 14px; }
+    .op-footer { display: flex; align-items: center; justify-content: space-between; }
+    .op-price { font-size: .9rem; color: var(--text-muted); }
+    .op-price strong { color: var(--text); font-size: 1rem; }
+
+    /* ── Tracking Modal ── */
+    #tracking-modal {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    #tracking-modal.open { display: flex; }
+    .modal-box {
+      background: var(--card); border-radius: var(--radius); padding: 36px;
+      max-width: 460px; width: 100%; box-shadow: var(--shadow);
+      border: 1px solid rgba(247,193,0,.2); position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none; color: var(--text-muted);
+      font-size: 1.4rem; cursor: pointer; transition: color .2s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .tracking-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 24px; display: flex; gap: 10px; align-items: center; }
+    .track-steps { position: relative; padding-left: 32px; }
+    .track-steps::before {
+      content: ''; position: absolute; left: 11px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(255,255,255,.1);
+    }
+    .track-step { position: relative; margin-bottom: 24px; }
+    .track-step:last-child { margin-bottom: 0; }
+    .track-dot {
+      position: absolute; left: -26px; top: 2px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--card2); border: 2px solid rgba(255,255,255,.2);
+    }
+    .track-dot.done { background: var(--success); border-color: var(--success); }
+    .track-dot.active { background: var(--yellow); border-color: var(--yellow); animation: pulse .8s ease infinite alternate; }
+    @keyframes pulse { from{box-shadow:0 0 0 0 rgba(247,193,0,.4)} to{box-shadow:0 0 0 8px rgba(247,193,0,0)} }
+    .track-label { font-weight: 700; font-size: .95rem; }
+    .track-sub { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+    .eta-box {
+      background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25);
+      border-radius: var(--radius-sm); padding: 14px; margin-top: 24px; text-align: center;
+    }
+    .eta-box .eta-num { font-size: 2rem; font-weight: 900; color: var(--success); }
+    .eta-box .eta-label { font-size: .8rem; color: var(--text-muted); }
+
+    /* ── Features ── */
+    #features { background: var(--dark); }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+    .feature-card {
+      background: var(--card); border-radius: var(--radius); padding: 28px 24px;
+      border: 1px solid rgba(255,255,255,.05); transition: all .2s;
+    }
+    .feature-card:hover { border-color: rgba(247,193,0,.3); transform: translateY(-3px); }
+    .feature-icon { font-size: 2.2rem; margin-bottom: 14px; }
+    .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { color: var(--text-muted); font-size: .88rem; line-height: 1.55; }
+
+    /* ── Testimonials ── */
+    #testimonials { background: var(--dark2); }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .testimonial-card {
+      background: var(--card); border-radius: var(--radius); padding: 26px;
+      border: 1px solid rgba(255,255,255,.05);
+    }
+    .testimonial-text { color: var(--text-muted); font-size: .92rem; line-height: 1.6; margin-bottom: 18px; font-style: italic; }
+    .testimonial-text::before { content: '"'; color: var(--yellow); font-size: 1.4rem; }
+    .testimonial-text::after { content: '"'; color: var(--yellow); font-size: 1.4rem; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .author-avatar { width: 42px; height: 42px; border-radius: 50%; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; }
+    .author-name { font-weight: 700; font-size: .92rem; }
+    .author-role { font-size: .78rem; color: var(--text-muted); }
+
+    /* ── CTA Banner ── */
+    #cta {
+      background: linear-gradient(135deg, rgba(247,193,0,.12) 0%, rgba(255,107,0,.08) 100%);
+      border-top: 1px solid rgba(247,193,0,.15);
+      border-bottom: 1px solid rgba(247,193,0,.15);
+      text-align: center; padding: 80px 20px;
+    }
+    #cta h2 { margin-bottom: 14px; }
+    #cta p { color: var(--text-muted); margin-bottom: 36px; font-size: 1.05rem; }
+    .app-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .app-btn {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--card); border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius); padding: 14px 24px; cursor: pointer;
+      transition: all .2s; text-decoration: none; color: var(--text);
+    }
+    .app-btn:hover { border-color: var(--yellow); transform: translateY(-2px); }
+    .app-btn-icon { font-size: 1.8rem; }
+    .app-btn-text .sub { font-size: .7rem; color: var(--text-muted); }
+    .app-btn-text .main { font-size: 1rem; font-weight: 700; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--dark2); padding: 48px 20px 24px;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 40px; margin-bottom: 40px; }
+    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-brand p { color: var(--text-muted); font-size: .88rem; margin-top: 10px; line-height: 1.6; }
+    .footer-col h4 { font-size: .9rem; font-weight: 700; margin-bottom: 14px; color: var(--yellow); }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 8px; }
+    .footer-col ul li a { color: var(--text-muted); text-decoration: none; font-size: .88rem; transition: color .2s; }
+    .footer-col ul li a:hover { color: var(--text); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,.06); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .footer-bottom p { color: var(--text-muted); font-size: .82rem; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--success); color: #fff; padding: 14px 24px; border-radius: 50px;
+      font-weight: 600; font-size: .95rem; z-index: 300;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+      display: flex; align-items: center; gap: 8px;
+      pointer-events: none; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Inline form errors ── */
+    .field-error { color: var(--danger); font-size: .78rem; margin-top: 4px; display: none; }
+    .field-error.visible { display: block; }
+    input.invalid, select.invalid { border-color: var(--danger); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav>
+    <a class="nav-brand" href="#hero">
+      <span>🚜</span> JCBGo
+    </a>
+    <div class="nav-links">
+      <a class="btn btn-outline btn-sm" href="#operators">Find Operators</a>
+      <a class="btn btn-primary btn-sm" href="#book">Book Now</a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <section id="hero">
+    <div class="floating-jcb">🚜</div>
+    <div class="floating-jcb">⛏️</div>
+    <div class="hero-content">
+      <div class="hero-badge">🚀 India's First JCB Booking App</div>
+      <h1>Book a <em>JCB</em> in<br/>Under 5 Minutes</h1>
+      <p class="hero-sub">
+        Like Rapido for bikes – but for excavators. Connect with verified JCB operators near you, get instant quotes, and track your machine in real‑time.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#book">📋 Post a Job</a>
+        <a class="btn btn-outline" href="#how">How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">1,200+</div>
+          <div class="stat-label">Verified Operators</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">48 Cities</div>
+          <div class="stat-label">& Growing</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">4.8 ⭐</div>
+          <div class="stat-label">Average Rating</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">&lt; 5 min</div>
+          <div class="stat-label">Avg. Match Time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ── -->
+  <section id="how">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Simple Process</div>
+        <h2>How <em>JCBGo</em> Works</h2>
+        <p class="section-sub">From posting a job to job completion in 4 easy steps</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-icon">📍</div>
+          <h3>Post Your Job</h3>
+          <p>Enter your location, excavation type, estimated depth, and preferred date. Takes less than 2 minutes.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-icon">🔔</div>
+          <h3>Get Instant Quotes</h3>
+          <p>Nearby verified JCB operators receive your request and respond with competitive quotes within minutes.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-icon">✅</div>
+          <h3>Confirm & Pay</h3>
+          <p>Compare operator ratings and prices. Confirm the booking and pay securely through the app.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-icon">📡</div>
+          <h3>Track in Real‑Time</h3>
+          <p>Watch your JCB operator en route and get live updates on job progress – just like ordering a ride.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Booking Form ── -->
+  <section id="book">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Book Now</div>
+        <h2>Post a <em>JCB Job</em></h2>
+        <p class="section-sub">Fill in the details and get matched with available operators near you</p>
+      </div>
+      <div class="booking-wrapper">
+        <div class="booking-form">
+          <div class="form-title">🚜 Job Details</div>
+          <form id="job-form" novalidate>
+            <div class="form-group">
+              <label for="location">📍 Site Location</label>
+              <input type="text" id="location" placeholder="Enter your site address or pincode" required />
+              <div class="field-error" id="err-location">Please enter your site location.</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="job-type">⛏️ Job Type</label>
+                <select id="job-type">
+                  <option value="">Select type...</option>
+                  <option value="foundation">Foundation Digging</option>
+                  <option value="trenching">Trenching / Pipe Laying</option>
+                  <option value="land-clearing">Land Clearing</option>
+                  <option value="demolition">Demolition / Debris</option>
+                  <option value="pool">Swimming Pool Excavation</option>
+                  <option value="road">Road / Drainage Work</option>
+                  <option value="other">Other</option>
+                </select>
+                <div class="field-error" id="err-job-type">Please select a job type.</div>
+              </div>
+              <div class="form-group">
+                <label for="machine-size">🔧 Machine Size</label>
+                <select id="machine-size">
+                  <option value="small">Small (Mini JCB)</option>
+                  <option value="medium" selected>Medium (Standard JCB)</option>
+                  <option value="large">Large (Heavy Excavator)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="job-date">📅 Preferred Date</label>
+                <input type="date" id="job-date" required />
+              </div>
+              <div class="form-group">
+                <label for="duration">⏱️ Estimated Duration</label>
+                <select id="duration">
+                  <option value="half">Half Day (4 hrs)</option>
+                  <option value="full" selected>Full Day (8 hrs)</option>
+                  <option value="2days">2 Days</option>
+                  <option value="week">1 Week</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="notes">📝 Additional Notes</label>
+              <textarea id="notes" placeholder="E.g. soil type, access road width, special requirements..."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="owner-name">👤 Your Name</label>
+                <input type="text" id="owner-name" placeholder="Full name" required />
+                <div class="field-error" id="err-name">Please enter your name.</div>
+              </div>
+              <div class="form-group">
+                <label for="phone">📞 Phone Number</label>
+                <input type="tel" id="phone" placeholder="+91 XXXXX XXXXX" required />
+                <div class="field-error" id="err-phone">Please enter your phone number.</div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px;font-size:1.05rem;">
+              🚀 Find Operators Now
+            </button>
+          </form>
+        </div>
+        <div class="booking-info">
+          <h3>Why book with JCBGo?</h3>
+          <ul class="info-list">
+            <li><span class="icon">✅</span> All operators are verified, licensed, and insured</li>
+            <li><span class="icon">⚡</span> Average response time under 5 minutes</li>
+            <li><span class="icon">💰</span> Competitive transparent pricing – no hidden charges</li>
+            <li><span class="icon">⭐</span> Real ratings from verified customers</li>
+            <li><span class="icon">🛡️</span> Secure in-app payment with UPI, cards, & wallets</li>
+            <li><span class="icon">📡</span> Real-time tracking of machine and operator</li>
+            <li><span class="icon">🤝</span> Dedicated 24/7 customer support</li>
+          </ul>
+          <div class="price-estimate" id="price-estimate">
+            <h4>💡 Estimated Cost Range</h4>
+            <div class="price-range" id="price-display">₹3,500 – ₹6,500</div>
+            <div class="price-note">Based on medium JCB, full day in your region. Final quote from operator.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Nearby Operators ── -->
+  <section id="operators">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Available Now</div>
+        <h2><em>Nearby</em> Operators</h2>
+        <p class="section-sub">Verified JCB operators ready to take your job today</p>
+      </div>
+      <div class="operators-grid" id="operators-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ── -->
+  <section id="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Features</div>
+        <h2>Everything You <em>Need</em></h2>
+        <p class="section-sub">Designed for homebuilders, contractors, and JCB operators alike</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🗺️</div>
+          <h3>Live Map Tracking</h3>
+          <p>See your booked JCB operator moving toward your site in real-time on an interactive map.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>In-App Chat</h3>
+          <p>Communicate directly with the operator before and during the job to coordinate details.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Transparent Pricing</h3>
+          <p>See hourly and daily rates upfront. No surprise charges. Final invoice delivered in-app.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔔</div>
+          <h3>Smart Notifications</h3>
+          <p>Get SMS and push notifications for booking confirmation, operator arrival, and job completion.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⭐</div>
+          <h3>Ratings & Reviews</h3>
+          <p>Rate operators after every job. Our system automatically promotes top-performing operators.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💳</div>
+          <h3>Secure Payments</h3>
+          <p>Pay via UPI, credit/debit card, net banking, or wallet. Instant receipt generation.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏆</div>
+          <h3>Loyalty Program</h3>
+          <p>Earn JCBPoints on every booking. Redeem for discounts on future jobs.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>Job History</h3>
+          <p>Access full booking history, invoices, and operator contact info for repeat jobs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Testimonials ── -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Reviews</div>
+        <h2>What Our <em>Users Say</em></h2>
+        <p class="section-sub">Real feedback from homebuilders and contractors across India</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-text">I used to spend 2–3 days calling people to find a JCB. With JCBGo I had someone at my site in 3 hours. Incredible!</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:rgba(247,193,0,.15)">👨</div>
+            <div>
+              <div class="author-name">Rajesh Sharma</div>
+              <div class="author-role">House Owner, Pune</div>
+            </div>
+            <div class="stars" style="margin-left:auto">★★★★★</div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">As a contractor, this app tripled my bookings. I don't sit idle anymore — there's always a job waiting for me on JCBGo.</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:rgba(34,197,94,.15)">👷</div>
+            <div>
+              <div class="author-name">Sunil Kumar (Operator)</div>
+              <div class="author-role">JCB Operator, Nagpur</div>
+            </div>
+            <div class="stars" style="margin-left:auto">★★★★★</div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">The transparent pricing feature is a game-changer. No haggling, no confusion — just a fair price and great service.</p>
+          <div class="testimonial-author">
+            <div class="author-avatar" style="background:rgba(255,107,0,.15)">👩</div>
+            <div>
+              <div class="author-name">Priya Mehta</div>
+              <div class="author-role">Real Estate Developer, Mumbai</div>
+            </div>
+            <div class="stars" style="margin-left:auto">★★★★★</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section id="cta">
+    <div class="container">
+      <div class="section-tag">Get Started</div>
+      <h2>Ready to <em>Book Your JCB?</em></h2>
+      <p>Download the app or book directly from the web. Available on Android and iOS.</p>
+      <div class="app-buttons">
+        <a class="app-btn" href="#book">
+          <span class="app-btn-icon">🌐</span>
+          <div class="app-btn-text">
+            <div class="sub">Book on</div>
+            <div class="main">Web App</div>
+          </div>
+        </a>
+        <a class="app-btn" href="#book">
+          <span class="app-btn-icon">📱</span>
+          <div class="app-btn-text">
+            <div class="sub">Download on</div>
+            <div class="main">Google Play</div>
+          </div>
+        </a>
+        <a class="app-btn" href="#book">
+          <span class="app-btn-icon">🍎</span>
+          <div class="app-btn-text">
+            <div class="sub">Download on</div>
+            <div class="main">App Store</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-brand" style="display:inline-flex;margin-bottom:10px">
+            <span>🚜</span> JCBGo
+          </div>
+          <p>India's fastest JCB & excavation booking platform. Connecting homebuilders with verified operators in under 5 minutes.</p>
+        </div>
+        <div class="footer-col">
+          <h4>For Users</h4>
+          <ul>
+            <li><a href="#book">Post a Job</a></li>
+            <li><a href="#operators">Find Operators</a></li>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#features">Features</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>For Operators</h4>
+          <ul>
+            <li><a href="#book">Register Machine</a></li>
+            <li><a href="#features">Operator App</a></li>
+            <li><a href="#testimonials">Success Stories</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 JCBGo. All rights reserved.</p>
+        <p>Made with ❤️ for homebuilders across India</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Tracking Modal ── -->
+  <div id="tracking-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeTracking()">✕</button>
+      <div class="tracking-title">📡 Live Job Tracking</div>
+      <div class="track-steps">
+        <div class="track-step">
+          <div class="track-dot done"></div>
+          <div class="track-label">Job Posted</div>
+          <div class="track-sub">Your request has been sent to nearby operators</div>
+        </div>
+        <div class="track-step">
+          <div class="track-dot done"></div>
+          <div class="track-label">Operator Matched</div>
+          <div class="track-sub" id="track-operator-name">Ramesh K. (⭐ 4.9) accepted your job</div>
+        </div>
+        <div class="track-step">
+          <div class="track-dot active"></div>
+          <div class="track-label">Operator En Route 🚜</div>
+          <div class="track-sub">JCB is heading to your site</div>
+        </div>
+        <div class="track-step">
+          <div class="track-dot"></div>
+          <div class="track-label">Work in Progress</div>
+          <div class="track-sub">Excavation underway</div>
+        </div>
+        <div class="track-step">
+          <div class="track-dot"></div>
+          <div class="track-label">Job Complete ✅</div>
+          <div class="track-sub">Rate your experience</div>
+        </div>
+      </div>
+      <div class="eta-box">
+        <div class="eta-num" id="eta-num">18 min</div>
+        <div class="eta-label">Estimated arrival at your site</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div id="toast">✅ Booking confirmed! Operators are being notified.</div>
+
+  <script>
+    // ── Operator Data ──
+    const operators = [
+      { id: 1, name: "Ramesh Kumar", emoji: "👷", bg: "rgba(247,193,0,.15)", rating: 4.9, jobs: 312, distance: "1.2 km", status: "available", price: "₹4,200/day", tags: ["Foundation", "Trenching", "Land Clearing"], exp: "8 yrs" },
+      { id: 2, name: "Sunil Patil", emoji: "🧑", bg: "rgba(34,197,94,.15)", rating: 4.8, jobs: 245, distance: "2.4 km", status: "available", price: "₹3,800/day", tags: ["Demolition", "Road Work", "Drainage"], exp: "6 yrs" },
+      { id: 3, name: "Mahesh Singh", emoji: "👨‍🔧", bg: "rgba(255,107,0,.15)", rating: 4.7, jobs: 189, distance: "3.1 km", status: "busy", price: "₹4,500/day", tags: ["Foundation", "Pool Excavation"], exp: "10 yrs" },
+      { id: 4, name: "Anil Desai", emoji: "🧔", bg: "rgba(99,102,241,.15)", rating: 4.9, jobs: 421, distance: "3.8 km", status: "available", price: "₹5,000/day", tags: ["Heavy Excavation", "Commercial", "Demolition"], exp: "14 yrs" },
+      { id: 5, name: "Vijay Yadav", emoji: "👨‍💼", bg: "rgba(236,72,153,.15)", rating: 4.6, jobs: 143, distance: "4.5 km", status: "available", price: "₹3,500/day", tags: ["Residential", "Foundation", "Trenching"], exp: "4 yrs" },
+      { id: 6, name: "Prakash Naik", emoji: "🧑‍🦱", bg: "rgba(20,184,166,.15)", rating: 4.8, jobs: 278, distance: "5.0 km", status: "available", price: "₹4,000/day", tags: ["Land Clearing", "Road Work", "Foundation"], exp: "9 yrs" },
+    ];
+
+    // ── Render Operators ──
+    function renderOperators() {
+      const grid = document.getElementById('operators-grid');
+      grid.innerHTML = operators.map(op => `
+        <div class="operator-card" onclick="bookOperator(${op.id})">
+          <div class="op-header">
+            <div class="op-avatar" style="background:${op.bg}">${op.emoji}</div>
+            <div>
+              <div class="op-name">${op.name}</div>
+              <div class="op-meta">${op.exp} experience · ${op.distance} away</div>
+            </div>
+            <span class="badge ${op.status === 'available' ? 'badge-green' : 'badge-orange'}" style="margin-left:auto">
+              ${op.status === 'available' ? '● Available' : '● On Job'}
+            </span>
+          </div>
+          <div class="op-stats">
+            <div class="op-stat">
+              <div class="op-stat-val">⭐ ${op.rating}</div>
+              <div class="op-stat-label">Rating</div>
+            </div>
+            <div class="op-stat">
+              <div class="op-stat-val">${op.jobs}</div>
+              <div class="op-stat-label">Jobs Done</div>
+            </div>
+            <div class="op-stat">
+              <div class="op-stat-val">${op.distance}</div>
+              <div class="op-stat-label">Distance</div>
+            </div>
+          </div>
+          <div class="op-tags">
+            ${op.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          </div>
+          <div class="op-footer">
+            <div class="op-price">From <strong>${op.price}</strong></div>
+            <button class="btn btn-primary btn-sm" ${op.status === 'busy' ? 'disabled style="opacity:.5;cursor:not-allowed"' : ''}>
+              ${op.status === 'available' ? 'Book Now' : 'Unavailable'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ── Price Estimator ──
+    const priceMap = {
+      small:  { half: [1800, 2800], full: [3000, 4500], '2days': [5500, 8000], week: [18000, 26000] },
+      medium: { half: [2500, 4000], full: [3500, 6500], '2days': [6500, 11000], week: [22000, 38000] },
+      large:  { half: [4000, 6000], full: [6000, 10000], '2days': [11000, 18000], week: [35000, 60000] },
+    };
+
+    function updatePrice() {
+      const size = document.getElementById('machine-size').value;
+      const dur = document.getElementById('duration').value;
+      const [lo, hi] = priceMap[size][dur];
+      document.getElementById('price-display').textContent = `₹${lo.toLocaleString('en-IN')} – ₹${hi.toLocaleString('en-IN')}`;
+    }
+
+    document.getElementById('machine-size').addEventListener('change', updatePrice);
+    document.getElementById('duration').addEventListener('change', updatePrice);
+
+    // ── Set min date for date picker ──
+    document.getElementById('job-date').min = new Date().toISOString().split('T')[0];
+
+    // ── Form Validation Helpers ──
+    function setFieldError(fieldId, errorId, isInvalid) {
+      const field = document.getElementById(fieldId);
+      const error = document.getElementById(errorId);
+      field.classList.toggle('invalid', isInvalid);
+      error.classList.toggle('visible', isInvalid);
+      return isInvalid;
+    }
+
+    // ── Form Submit ──
+    document.getElementById('job-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const loc = document.getElementById('location').value.trim();
+      const name = document.getElementById('owner-name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const jobType = document.getElementById('job-type').value;
+
+      const hasErrors = [
+        setFieldError('location', 'err-location', !loc),
+        setFieldError('job-type', 'err-job-type', !jobType),
+        setFieldError('owner-name', 'err-name', !name),
+        setFieldError('phone', 'err-phone', !phone),
+      ].some(Boolean);
+
+      if (hasErrors) {
+        const firstError = document.querySelector('.invalid');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      showToast('🚀 Job posted! Finding operators near you…');
+      setTimeout(() => openTracking(), 2000);
+    });
+
+    // Clear inline errors on input
+    ['location', 'job-type', 'owner-name', 'phone'].forEach(id => {
+      document.getElementById(id).addEventListener('input', function() {
+        this.classList.remove('invalid');
+        const errId = { 'location': 'err-location', 'job-type': 'err-job-type', 'owner-name': 'err-name', 'phone': 'err-phone' }[id];
+        document.getElementById(errId).classList.remove('visible');
+      });
+    });
+
+    // ── Book Operator (from card) ──
+    function bookOperator(id) {
+      const op = operators.find(o => o.id === id);
+      if (!op || op.status === 'busy') return;
+      document.getElementById('track-operator-name').textContent = `${op.name} (⭐ ${op.rating}) accepted your job`;
+      showToast(`✅ ${op.name} booked! Confirmed.`);
+      setTimeout(() => openTracking(), 1000);
+    }
+
+    // ── Tracking Modal ──
+    let etaTimer = null;
+    function openTracking() {
+      document.getElementById('tracking-modal').classList.add('open');
+      if (etaTimer) clearInterval(etaTimer);
+      // Countdown: 18 minutes displayed as mm:ss, ticking every second
+      let totalSeconds = 18 * 60;
+      const etaEl = document.getElementById('eta-num');
+      function formatEta(s) {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return m > 0 ? `${m}:${String(sec).padStart(2, '0')} min` : `${sec}s`;
+      }
+      etaEl.textContent = formatEta(totalSeconds);
+      etaTimer = setInterval(() => {
+        totalSeconds = Math.max(0, totalSeconds - 1);
+        etaEl.textContent = totalSeconds > 0 ? formatEta(totalSeconds) : 'Arriving Now 🎉';
+        if (totalSeconds === 0) clearInterval(etaTimer);
+      }, 1000);
+    }
+
+    function closeTracking() {
+      document.getElementById('tracking-modal').classList.remove('open');
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('tracking-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeTracking();
+    });
+
+    // ── Toast ──
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    // ── Init ──
+    renderOperators();
+  </script>
+</body>
+</html>
